@@ -44,11 +44,11 @@ except:
 """the following piece of code prints out all unique units of the three item given"""
 
 drill_units=drilldf['Unit'].unique()
-print(drill_units,'drills')
+
 glove_units=glovedf['Unit'].unique()
-print(glove_units,'gloves')
+
 kurta_units=kurtadf['Unit'].unique()
-print(kurta_units,'kurtas')
+
 
 """The following three cells prints out the count of each unique unts."""
 
@@ -76,20 +76,12 @@ npa=drilldf[(drill_z < 3)]['Price']
 npa1=glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)]['Price']
 npa2=kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)]['Price'][:-1]
 
-"""The following 3 cells describe the data taken for consideration"""
-
-drilldf[(drill_z < 3)].describe()
-
-glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)].describe()
-
-kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)].describe()
-
 """The following cell is used to store standard deviation which is very important to calculate the bandwidth in later part"""
 
 stdev=np.std(npa)
 stdev1=np.std(npa1)
 stdev2=np.std(npa2)
-print(stdev,stdev1,stdev2)
+
 
 """# Kernel Density estimation method for calculation of Probabilty Disribution Function
 we are using probability distribution function for find ing require range as pdf is more suitable for finding relationship in general population.
@@ -133,12 +125,12 @@ plt.show()
 w=((np.amax(npa)-np.amin(npa))*1.8)/10000
 w1=((np.amax(npa1)-np.amin(npa1))*1.8)/10000
 w2=((np.amax(npa2)-np.amin(npa2))*0.05+np.amax(npa2)*1.05)/10000
-print(np.sum(pdf)*w,np.sum(pdf1)*w1,np.sum(pdf2)*w2)
+
 
 pdf_area=np.zeros(len(pdf)-1)
 for a in range(len(pdf_area)):
   pdf_area[a]=(pdf[a]+pdf[a+1])*(w/2)
-print(np.sum(pdf_area))
+
 
 """# Range calculation from PDF 
 we used 2 methods for calculating a range they are 
@@ -151,7 +143,7 @@ we used 2 methods for calculating a range they are
 f_peak=argrelextrema(pdf, np.greater)[0][0]
 for q in range(f_peak):
   if np.sum(pdf[f_peak-q:f_peak+q])*w > 0.5:
-    print(np.sum(pdf[f_peak-q:f_peak+q])*w,q)
+
     break
 print('This is the range obtained for drill ',np.round((f_peak-q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((f_peak+q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
 
@@ -159,14 +151,12 @@ f_peak1=argrelextrema(pdf1, np.greater)[0][0]
 q=0
 for q in range(f_peak1):
   if np.sum(pdf1[f_peak1-q:f_peak1+2*q])*w1 > 0.5:
-    print(np.sum(pdf1[f_peak1-q:f_peak1+2*q])*w1,q)
     break
 print('This is the range obtained for gloves ',np.round((f_peak1-q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((f_peak1+2*q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
 
 f_peak2=argrelextrema(pdf2, np.greater)[0][0]
 for q in range(f_peak2):
   if np.sum(pdf2[f_peak2-q:f_peak2+q])*w2 > 0.5:
-    print(np.sum(pdf2[f_peak2-q:f_peak2+q])*w2,q)
     break
 print('This is the range obtained for Kurta ',np.round((f_peak2-q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((f_peak2+q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
 
@@ -174,7 +164,6 @@ qq1=len(pdf)
 for q in range(len(pdf)):
   for p in range(len(pdf)-(q+1)):
      if np.sum(pdf[p:p+q+1])*w > 0.5:
-        print(np.sum(pdf[p:p+q+1])*w,p,q)
         break
   if np.sum(pdf[p:p+q+1])*w > 0.5:
     break
@@ -184,7 +173,6 @@ qq2=len(pdf1)
 for q in range(len(pdf1)):
   for p in range(len(pdf1)-(q+1)):
      if np.sum(pdf1[p:p+q+1])*w1 > 0.5:
-        print(np.sum(pdf1[p:p+q+1])*w1,p,q)
         break
   if np.sum(pdf1[p:p+q+1])*w1 > 0.5:
     break
@@ -194,7 +182,6 @@ qq3=len(pdf2)
 for q in range(len(pdf2)):
   for p in range(len(pdf2)-(q+1)):
      if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
-        print(np.sum(pdf2[p:p+q+1])*w2,p,q)
         break
   if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
     break
