@@ -58,6 +58,11 @@ glovedf['Unit'].value_counts()
 
 kurtadf['Unit'].value_counts()
 
+d_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1nos'])
+g_entries=list(['Pair','Pair(s)','Unit'])
+k_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1','piece','1pc','1piece'])
+
+
 """# Calculating Z-score
 Z-score is meausure of how much given sample is deviating compared to Standaed deviation.
 In python the function is available in scipy.stats which we are using in the following cells
@@ -65,17 +70,20 @@ In python the function is available in scipy.stats which we are using in the fol
 **note:**we are calculating only abolsolute values as sign of z-score doesn't matter in finding outliers
 """
 
-drill_z = np.abs(stats.zscore(drilldf['Price']))
-glove_z = np.abs(stats.zscore(glovedf.loc[glovedf['Unit']=='Pair']['Price']))
-kurta_z = np.abs(stats.zscore(kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))]['Price']))
+drill_cl=drilldf[drilldf['Unit'].isin(d_entries)]
+glove_cl=glovedf[glovedf['Unit'].isin(g_entries)]
+kurta_cl=kurtadf[kurtadf['Unit'].isin(k_entries)]
+
+
+drill_z = np.abs(stats.zscore(drill_cl['Price']))
+glove_z = np.abs(stats.zscore(glove_cl['Price']))
+kurta_z = np.abs(stats.zscore(kurta_cl['Price']))
 
 """After obtaing z-score we are not considering all entries whse z-score is greater than 3 or less than -3 and also we are considering only some units values as unit conversion is not as indicative as the sugar example given."""
 
-drill_ol=drilldf[(drill_z < 3)]
-npa=drilldf[(drill_z < 3)]['Price']
-npa1=glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)]['Price']
-npa2=kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)]['Price'][:-1]
-
+npa=drill_cl[(drill_z < 3)]['Price']
+npa1=glove_cl[(glove_z < 3)]['Price']
+npa2=kurta_cl[(kurta_z < 3)]['Price'][:-1]
 """The following cell is used to store standard deviation which is very important to calculate the bandwidth in later part"""
 
 stdev=np.std(npa)
