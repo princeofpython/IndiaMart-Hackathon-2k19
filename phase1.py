@@ -50,14 +50,6 @@ glove_units=glovedf['Unit'].unique()
 kurta_units=kurtadf['Unit'].unique()
 
 
-"""The following three cells prints out the count of each unique unts."""
-
-drilldf['Unit'].value_counts()
-
-glovedf['Unit'].value_counts()
-
-kurtadf['Unit'].value_counts()
-
 """# Calculating Z-score
 Z-score is meausure of how much given sample is deviating compared to Standaed deviation.
 In python the function is available in scipy.stats which we are using in the following cells
@@ -75,6 +67,14 @@ drill_ol=drilldf[(drill_z < 3)]
 npa=drilldf[(drill_z < 3)]['Price']
 npa1=glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)]['Price']
 npa2=kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)]['Price'][:-1]
+
+"""The following 3 cells describe the data taken for consideration"""
+
+drilldf[(drill_z < 3)].describe()
+
+glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)].describe()
+
+kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)].describe()
 
 """The following cell is used to store standard deviation which is very important to calculate the bandwidth in later part"""
 
@@ -101,36 +101,76 @@ def kde_scipy(x, x_grid, bandwidth, **kwargs):
 y_grid=np.linspace(np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4,np.amax(npa)+(np.amax(npa)-np.amin(npa))*0.4,10000)
 ideal=1.06*(np.std(npa))*((len(npa)**(-1/5)))
 pdf = kde_scipy(npa, y_grid, bandwidth=ideal)
-plt.plot(y_grid, pdf, color='blue', alpha=1, lw=1)
-plt.title('PDF for drill')
-plt.xlabel('Price')
-plt.show()
+
 
 y_grid1=np.linspace(np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4,np.amax(npa1)+(np.amax(npa1)-np.amin(npa1))*0.4,10000)
 ideal1=1.06*(np.std(npa1))*((len(npa1)**(-1/5)))
 pdf1 = kde_scipy(npa1, y_grid1, bandwidth=ideal1)
-plt.plot(y_grid1, pdf1, color='blue', alpha=1, lw=1)
-plt.title('PDF for gloves')
-plt.xlabel('Price')
-plt.show()
+
 
 y_grid2=np.linspace(-(np.amax(npa2)-np.amin(npa2))*0.05,np.amax(npa2)*1.05,10000)
 ideal2=1.06*(np.std(npa2))*((len(npa2)**(-1/5)))
 pdf2 = kde_scipy(npa2, y_grid2, bandwidth=ideal2)
-plt.plot(y_grid2, pdf2, color='blue', alpha=1, lw=1)
-plt.title('PDF for kurta')
-plt.xlabel('Price')
-plt.show()
+
 
 w=((np.amax(npa)-np.amin(npa))*1.8)/10000
 w1=((np.amax(npa1)-np.amin(npa1))*1.8)/10000
 w2=((np.amax(npa2)-np.amin(npa2))*0.05+np.amax(npa2)*1.05)/10000
 
+"""before going to calculation for area we need to make sure that probability of a product price below Rupees 0 is 0( for PDF calculated above we have finite probability for price less than 0 ) we can usee bayes theorem to re calculate the PDF.
 
-pdf_area=np.zeros(len(pdf)-1)
-for a in range(len(pdf_area)):
-  pdf_area[a]=(pdf[a]+pdf[a+1])*(w/2)
+\begin{equation*}
+PDF(x | Price > 0)   = \frac{probab(x>0)*PDF(x)}{probab(Price >0)}
+\end{equation*}
+here PDF(x) is the pdf function 
 
+probab(price >0) is probabilty that price >0 which sum of area under pdf for price >0
+
+probab(x>0) is eiter 1 or 0 depending on x
+"""
+
+for a in range(len(pdf)):
+  if y_grid[a] > 0:
+    break
+probab=np.sum(pdf[a:])*w
+for a in range(len(pdf)):
+  if y_grid[a] > 0:
+    break
+  pdf[a]=0
+pdf=pdf/probab
+
+plt.plot(y_grid, pdf, color='blue', alpha=1, lw=1)
+plt.title('PDF for drill')
+plt.xlabel('Price')
+plt.show()
+
+for a in range(len(pdf1)):
+  if y_grid1[a] > 0:
+    break
+probab1=np.sum(pdf1[a:])*w1
+for a in range(len(pdf1)):
+  if y_grid1[a] > 0:
+    break
+  pdf1[a]=0
+pdf1=pdf1/probab1
+plt.plot(y_grid1, pdf1, color='blue', alpha=1, lw=1)
+plt.title('PDF for gloves')
+plt.xlabel('Price')
+plt.show()
+
+for a in range(len(pdf2)):
+  if y_grid2[a] > 0:
+    break
+probab2=np.sum(pdf2[a:])*w2
+for a in range(len(pdf2)):
+  if y_grid2[a] > 0:
+    break
+  pdf2[a]=0
+pdf2=pdf2/probab2
+plt.plot(y_grid2, pdf2, color='blue', alpha=1, lw=1)
+plt.title('PDF for kurta')
+plt.xlabel('Price')
+plt.show()
 
 """# Range calculation from PDF 
 we used 2 methods for calculating a range they are 
@@ -143,22 +183,21 @@ we used 2 methods for calculating a range they are
 f_peak=argrelextrema(pdf, np.greater)[0][0]
 for q in range(f_peak):
   if np.sum(pdf[f_peak-q:f_peak+q])*w > 0.5:
-
     break
-print('This is the range obtained for drill ',np.round((f_peak-q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((f_peak+q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
+print('This is the range obtained for drill in peak method',np.round((f_peak-q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((f_peak+q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
 
 f_peak1=argrelextrema(pdf1, np.greater)[0][0]
 q=0
 for q in range(f_peak1):
   if np.sum(pdf1[f_peak1-q:f_peak1+2*q])*w1 > 0.5:
     break
-print('This is the range obtained for gloves ',np.round((f_peak1-q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((f_peak1+2*q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
+print('This is the range obtained for gloves in peak method',np.round((f_peak1-q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((f_peak1+2*q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
 
 f_peak2=argrelextrema(pdf2, np.greater)[0][0]
 for q in range(f_peak2):
   if np.sum(pdf2[f_peak2-q:f_peak2+q])*w2 > 0.5:
     break
-print('This is the range obtained for Kurta ',np.round((f_peak2-q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((f_peak2+q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
+print('This is the range obtained for Kurta in peak method',np.round((f_peak2-q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((f_peak2+q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
 
 qq1=len(pdf)
 for q in range(len(pdf)):
@@ -167,7 +206,7 @@ for q in range(len(pdf)):
         break
   if np.sum(pdf[p:p+q+1])*w > 0.5:
     break
-print('This is the range obtained for drill ',np.round((p)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((p+q+1)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
+print('This is the range obtained for drill in area method',np.round((p)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((p+q+1)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
 
 qq2=len(pdf1)
 for q in range(len(pdf1)):
@@ -176,13 +215,13 @@ for q in range(len(pdf1)):
         break
   if np.sum(pdf1[p:p+q+1])*w1 > 0.5:
     break
-print('This is the range obtained for gloves ',np.round((p)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((p+q+1)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
+print('This is the range obtained for gloves in area method',np.round((p)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((p+q+1)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
 
 qq3=len(pdf2)
 for q in range(len(pdf2)):
   for p in range(len(pdf2)-(q+1)):
-     if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
+     if np.sum(pdf2[p:p+q+1])*w2 > 0.7:
         break
-  if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
+  if np.sum(pdf2[p:p+q+1])*w2 > 0.7:
     break
-print('This is the range obtained for Kurta ',np.round((p)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((p+q+1)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
+print('This is the range obtained for Kurta in area method',np.round((p)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((p+q+1)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
