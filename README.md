@@ -1,6 +1,8 @@
 # IndiaMart-Hackathon-2k19
 # Objective
-Provide a working prototype solution to gauge the appropriate unit wise price range for the 3 categories based on their units by removing outliers from the data and we can split it into 2 parts.
+Provide a working prototype solution to gauge the appropriate unit wise price range for the 3 categories based on their units by removing outliers from the data.
+
+We can split it into 2 parts.
 * Extracting Data from the given file and finding and removing outliers from it
 * Find a PDF that fits the given data and suggests an appropriate range from it.
 
