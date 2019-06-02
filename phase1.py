@@ -198,7 +198,7 @@ for q in range(f_peak2):
   if np.sum(pdf2[f_peak2-q:f_peak2+q])*w2 > 0.5:
     break
 print('This is the range obtained for Kurta in peak method',np.round((f_peak2-q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((f_peak2+q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
-
+print('The following steps take some time please wait for it')
 qq1=len(pdf)
 for q in range(len(pdf)):
   for p in range(len(pdf)-(q+1)):
