@@ -49,6 +49,10 @@ glove_units=glovedf['Unit'].unique()
 
 kurta_units=kurtadf['Unit'].unique()
 
+d_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1nos'])
+g_entries=list(['Pair','Pair(s)','Unit'])
+k_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1','piece','1pc','1piece'])
+
 
 """The following three cells prints out the count of each unique unts."""
 
@@ -74,12 +78,32 @@ drill_cl=drilldf[drilldf['Unit'].isin(d_entries)]
 glove_cl=glovedf[glovedf['Unit'].isin(g_entries)]
 kurta_cl=kurtadf[kurtadf['Unit'].isin(k_entries)]
 
+<<<<<<< HEAD
+=======
+drill_cl.describe()
+>>>>>>> nikversion
 
 drill_z = np.abs(stats.zscore(drill_cl['Price']))
 glove_z = np.abs(stats.zscore(glove_cl['Price']))
 kurta_z = np.abs(stats.zscore(kurta_cl['Price']))
+<<<<<<< HEAD
 
 """After obtaing z-score we are not considering all entries whse z-score is greater than 3 or less than -3 and also we are considering only some units values as unit conversion is not as indicative as the sugar example given."""
+=======
+
+"""After obtaing z-score we are not considering all entries whse z-score is greater than 3 or less than -3 and also we are considering only some units values as unit conversion is not as indicative as the sugar example given."""
+
+npa=drill_cl[(drill_z < 3)]['Price']
+npa1=glove_cl[(glove_z < 3)]['Price']
+npa2=kurta_cl[(kurta_z < 3)]['Price'][:-1]
+"""The following 3 cells describe the data taken for consideration"""
+
+drilldf[(drill_z < 3)].describe()
+
+glovedf.loc[glovedf['Unit']=='Pair'][(glove_z < 3)].describe()
+
+kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)].describe()
+>>>>>>> nikversion
 
 npa=drill_cl[(drill_z < 3)]['Price']
 npa1=glove_cl[(glove_z < 3)]['Price']
