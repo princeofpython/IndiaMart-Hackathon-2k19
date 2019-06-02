@@ -225,15 +225,49 @@ plt.scatter(kurtadf['Price'],array);
 # 
 # 
 
+<<<<<<< HEAD
+"""The following three cells prints out the count of each unique unts."""
+
+drilldf['Unit'].value_counts()
+
+glovedf['Unit'].value_counts()
+
+kurtadf['Unit'].value_counts()
+
+d_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1nos'])
+g_entries=list(['Pair','Pair(s)','Unit'])
+k_entries=list(['Piece','Piece(s)','unit','Unit','Unit(s)','1','piece','1pc','1piece'])
+
+
+"""# Calculating Z-score
+Z-score is meausure of how much given sample is deviating compared to Standaed deviation.
+In python the function is available in scipy.stats which we are using in the following cells
+=======
 # In[ ]:
+>>>>>>> nikversion
 
 
 drill_z = np.abs(stats.zscore(drilldf['Price']))
 glove_z = np.abs(stats.zscore(glovedf['Price']))
 kurta_z = np.abs(stats.zscore(kurtadf['Price']))
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+drill_cl.describe()
+>>>>>>> nikversion
+
+drill_z = np.abs(stats.zscore(drill_cl['Price']))
+glove_z = np.abs(stats.zscore(glove_cl['Price']))
+kurta_z = np.abs(stats.zscore(kurta_cl['Price']))
+<<<<<<< HEAD
+
+"""After obtaing z-score we are not considering all entries whse z-score is greater than 3 or less than -3 and also we are considering only some units values as unit conversion is not as indicative as the sugar example given."""
+=======
+=======
 
 # After obtaing z-score we are not considering all entries whse z-score is greater than 3 or less than -3 and also we are considering only some units values as unit conversion is not as indicative as the sugar example given.
+>>>>>>> nikversion
 
 # In[ ]:
 
@@ -251,6 +285,15 @@ npa2=kurtadf[(kurta_z < 3)]['Price'][:-1]
 drilldf[(drill_z < 3)].describe()
 
 
+<<<<<<< HEAD
+kurtadf.loc[((kurtadf['Unit']=='Piece') | (kurtadf['Unit']=='Piece(s)'))][(kurta_z < 3)].describe()
+>>>>>>> nikversion
+
+npa=drill_cl[(drill_z < 3)]['Price']
+npa1=glove_cl[(glove_z < 3)]['Price']
+npa2=kurta_cl[(kurta_z < 3)]['Price'][:-1]
+"""The following cell is used to store standard deviation which is very important to calculate the bandwidth in later part"""
+=======
 # In[23]:
 
 
@@ -267,6 +310,7 @@ kurtadf[(kurta_z < 3)].describe()
 
 # In[25]:
 
+>>>>>>> nikversion
 
 stdev=np.std(npa)
 stdev1=np.std(npa1)
@@ -304,10 +348,13 @@ plt.plot(y_grid, pdf, color='blue', alpha=1, lw=1)
 plt.title('PDF for drill')
 plt.xlabel('Price')
 plt.show()
+<<<<<<< HEAD
+=======
 
 
 # In[28]:
 
+>>>>>>> nikversion
 
 y_grid1=np.linspace(np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4,np.amax(npa1)+(np.amax(npa1)-np.amin(npa1))*0.4,10000)
 ideal1=1.06*(np.std(npa1))*((len(npa1)**(-1/5)))
@@ -316,10 +363,13 @@ plt.plot(y_grid1, pdf1, color='blue', alpha=1, lw=1)
 plt.title('PDF for gloves')
 plt.xlabel('Price')
 plt.show()
+<<<<<<< HEAD
+=======
 
 
 # In[29]:
 
+>>>>>>> nikversion
 
 y_grid2=np.linspace(-(np.amax(npa2)-np.amin(npa2))*0.05,np.amax(npa2)*1.05,10000)
 ideal2=1.06*(np.std(npa2))*((len(npa2)**(-1/5)))
@@ -328,10 +378,13 @@ plt.plot(y_grid2, pdf2, color='blue', alpha=1, lw=1)
 plt.title('PDF for kurta')
 plt.xlabel('Price')
 plt.show()
+<<<<<<< HEAD
+=======
 
 
 # In[30]:
 
+>>>>>>> nikversion
 
 w=((np.amax(npa)-np.amin(npa))*1.8)/10000
 w1=((np.amax(npa1)-np.amin(npa1))*1.8)/10000
@@ -347,6 +400,13 @@ for a in range(len(pdf_area)):
     pdf_area[a]=(pdf[a]+pdf[a+1])*(w/2)
 print(np.sum(pdf_area))
 
+<<<<<<< HEAD
+
+pdf_area=np.zeros(len(pdf)-1)
+for a in range(len(pdf_area)):
+  pdf_area[a]=(pdf[a]+pdf[a+1])*(w/2)
+
+=======
 
 # before going to calculation for area we need to make sure that probability of a product price below Rupees 0 is 0( for PDF calculated above we have finite probability for price less than 0 ) we can usee bayes theorem to re calculate the PDF.
 # 
@@ -412,6 +472,7 @@ plt.plot(y_grid2, pdf2, color='blue', alpha=1, lw=1)
 plt.title('PDF for kurta')
 plt.xlabel('Price')
 plt.show()
+>>>>>>> nikversion
 
 
 # ## Range calculation from PDF 
@@ -425,7 +486,30 @@ plt.show()
 
 # In[43]:
 
+<<<<<<< HEAD
+f_peak=argrelextrema(pdf, np.greater)[0][0]
+for q in range(f_peak):
+  if np.sum(pdf[f_peak-q:f_peak+q])*w > 0.5:
 
+    break
+print('This is the range obtained for drill ',np.round((f_peak-q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((f_peak+q)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
+
+f_peak1=argrelextrema(pdf1, np.greater)[0][0]
+q=0
+for q in range(f_peak1):
+  if np.sum(pdf1[f_peak1-q:f_peak1+2*q])*w1 > 0.5:
+    break
+print('This is the range obtained for gloves ',np.round((f_peak1-q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((f_peak1+2*q)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
+
+f_peak2=argrelextrema(pdf2, np.greater)[0][0]
+for q in range(f_peak2):
+  if np.sum(pdf2[f_peak2-q:f_peak2+q])*w2 > 0.5:
+    break
+print('This is the range obtained for Kurta ',np.round((f_peak2-q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((f_peak2+q)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
+
+=======
+
+>>>>>>> nikversion
 qq1=len(pdf)
 for q in range(len(pdf)):
     for p in range(len(pdf)-(q+1)):
@@ -434,6 +518,11 @@ for q in range(len(pdf)):
             break
     if np.sum(pdf[p:p+q+1])*w > 0.6:
         break
+<<<<<<< HEAD
+  if np.sum(pdf[p:p+q+1])*w > 0.5:
+    break
+print('This is the range obtained for drill ',np.round((p)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4),np.round((p+q+1)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))
+=======
 print('This is the range obtained for drill ',max(min(npa),int(np.round((p)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4))),'to',int(np.round((p+q+1)*w+np.amin(npa)-(np.amax(npa)-np.amin(npa))*0.4)))  
      
         
@@ -441,6 +530,7 @@ print('This is the range obtained for drill ',max(min(npa),int(np.round((p)*w+np
 
 # In[36]:
 
+>>>>>>> nikversion
 
 qq2=len(pdf1)
 for q in range(len(pdf1)):
@@ -450,6 +540,20 @@ for q in range(len(pdf1)):
             break
     if np.sum(pdf1[p:p+q+1])*w1 > 0.5:
         break
+<<<<<<< HEAD
+  if np.sum(pdf1[p:p+q+1])*w1 > 0.5:
+    break
+print('This is the range obtained for gloves ',np.round((p)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4),np.round((p+q+1)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))
+
+qq3=len(pdf2)
+for q in range(len(pdf2)):
+  for p in range(len(pdf2)-(q+1)):
+     if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
+        break
+  if np.sum(pdf2[p:p+q+1])*w2 > 0.6:
+    break
+print('This is the range obtained for Kurta ',np.round((p)*w2-(np.amax(npa2)-np.amin(npa2))*0.05),np.round((p+q+1)*w2-(np.amax(npa2)-np.amin(npa2))*0.05))
+=======
 print('This is the range obtained for gloves ',max(min(npa1),int(np.round((p)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4))),int(np.round((p+q+1)*w1+np.amin(npa1)-(np.amax(npa1)-np.amin(npa1))*0.4)))  
  
 
@@ -538,3 +642,4 @@ print('This is the range obtained for Kurta ',max(min(npa2),int(np.round((f_peak
 # Maximum: 808
 # 
 # 
+>>>>>>> nikversion
